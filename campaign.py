@@ -8,12 +8,12 @@ if 'db' not in st.session_state:
 db = st.session_state.db
 
 def fetch_data_from_api(campaign_profile, selected_products, primary_objective, num_contents):
-    
     # Ensure campaign_profile contains required fields
     campaign_profile['product'] = selected_products
-    campaign_profile['primary_objective'] = primary_objective 
+    campaign_profile['primary_objective'] = primary_objective
+
     lst = []
-    for ch in campaign_profile['channel'] :
+    for ch in campaign_profile['channel']:
         if ch == "LinkedIn":
             ch = "SM-" + ch
         if ch == "Email":
@@ -23,7 +23,9 @@ def fetch_data_from_api(campaign_profile, selected_products, primary_objective, 
         lst.append(ch)
     campaign_profile["channel"] = lst
 
-    api_url = 'http://35.239.173.177:8000/process-features/'
+    api_url = 'http://35.239.173.177:7999/process-features/'  # Update with your API URL
+
+    print(campaign_profile)
 
     try:
         response = requests.post(api_url, json=campaign_profile)
@@ -76,29 +78,31 @@ def main():
             if selected_products and primary_objective:
                 # Fetch data from API based on selected products, objectives, and number of contents
                 generated_content = fetch_data_from_api(campaign_data, selected_products, primary_objective, num_contents)
+                print(generated_content)
         
-
                 if generated_content:
                     st.header('The MAGIC is here⚡')
-                    st.write("### Here's the CampAIgn for you (LLM Response)")
-                    st.write(generated_content["LLM_Response"])
                     
+                    # Display LLM Response
+                    with st.expander("CampAIgn Suggestions"):
+                        st.write("##### Here's the Campaign for you (LLM Response)")
+                        for idx,response in enumerate(generated_content.get("LLM_Response", [])):
+                            st.subheader(f'**LLM Response {idx + 1}**')
+                            st.write(response)
+                            st.write(f"**Market Score:** {generated_content['Market_score'][idx]}/10")  # Assuming it's a single score
+                            st.write(f"**Market Reason:** {generated_content['Market_score_reason'][idx]}")
+                            st.write(f"**Legal Score:** {generated_content['Legal_score'][idx]}/10")  # Assuming it's a single score
+                            st.write(f"**Legal Reason:** {generated_content['Legal_score_reason'][idx]}") 
+
+                    
+                    # Display Campaigns with expanders
                     with st.expander("View Reference Campaigns"):
                         for idx, campaign in enumerate(generated_content.get("Campaigns", [])):
                             st.write(f"### Campaign {idx + 1}")
                             st.write(campaign)
                             st.write(f"**Similarity Percentage:** {generated_content['Score'][idx]*100:.2f}")
 
-                    with st.expander("View Marketer Review Score"):
-                        st.write("### Market Score")
-                        st.write(f"**Score:** {generated_content['Market_score']}/10")
-                        st.write(f"**Reason:** {generated_content['Score_reason_market']}")
-
-                    with st.expander("View Legal Review Score"):
-                        st.write("### Legal Score")
-                        st.write(f"**Score:** {generated_content['Legal_score']}/10")
-                        st.write(f"**Reason:** {generated_content['Score_reason_legal']}")
-
+                    # Display Market Score with expander
                     
                 else:
                     st.warning("No content fetched from API.")
