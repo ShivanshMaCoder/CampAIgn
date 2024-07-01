@@ -87,16 +87,16 @@ def main():
                         for idx, campaign in enumerate(generated_content.get("Campaigns", [])):
                             st.write(f"### Campaign {idx + 1}")
                             st.write(campaign)
-                            st.write(f"**Score:** {generated_content['Score'][idx]:.2f}")
+                            st.write(f"**Similarity Percentage:** {generated_content['Score'][idx]*100:.2f}")
 
                     with st.expander("View Marketer Review Score"):
                         st.write("### Market Score")
-                        st.write(f"**Score:** {generated_content['Market_score']}")
+                        st.write(f"**Score:** {generated_content['Market_score']}/10")
                         st.write(f"**Reason:** {generated_content['Score_reason_market']}")
 
                     with st.expander("View Legal Review Score"):
                         st.write("### Legal Score")
-                        st.write(f"**Score:** {generated_content['Legal_score']}")
+                        st.write(f"**Score:** {generated_content['Legal_score']}/10")
                         st.write(f"**Reason:** {generated_content['Score_reason_legal']}")
 
                     
