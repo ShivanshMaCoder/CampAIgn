@@ -5,10 +5,12 @@ import firebase_admin
 from firebase_admin import credentials
 
 # Initialize Firebase if not already initialized
+
+fb_credentials=st.secrets['firebase']['my_project']
 if not firebase_admin._apps:
-    cred = credentials.Certificate("marketing-automation-3098a-32814245dc66.json")
+    cred = credentials.Certificate(fb_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'marketing-automation-3098a.appspot.com'  # Replace with your actual storage bucket name
+        'storageBucket': 'marketing-automation-3098a.appspot.com' 
     })
 
 # Import your app modules here
